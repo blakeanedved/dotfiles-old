@@ -2,42 +2,46 @@ set nocompatible
 " {{{ Plugins
 	call plug#begin('~/dotfiles/nvim/plugins')
 
-	Plug 'neomake/neomake'
-	Plug 'Shougo/deoplete.nvim'
-	Plug 'Shougo/deoplete-clangx'
-	Plug 'deoplete-plugins/deoplete-jedi'
-	Plug 'sebastianmarkow/deoplete-rust'
-	Plug 'HerringtonDarkholme/yats.vim'
-	Plug 'mhartington/nvim-typescript', {'do': './install.sh'}
-	Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
-	Plug 'donRaphaco/neotex', { 'for': 'tex' }
+	"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+	"Plug 'HerringtonDarkholme/yats.vim'
+	"Plug 'mhartington/nvim-typescript', {'do': './install.sh'}
+	"Plug 'SirVer/ultisnips'
+	"Plug 'honza/vim-snippets'
+	"Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+	"Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
+	"Plug 'donRaphaco/neotex', { 'for': 'tex' }
 	Plug 'edkolev/tmuxline.vim'
 	Plug 'vim-airline/vim-airline'
 	Plug 'tyrannicaltoucan/vim-quantum'
 	Plug 'scrooloose/nerdtree'
 	Plug 'scrooloose/nerdcommenter'
 	Plug 'tpope/vim-surround'
-	Plug 'beyondmarc/glsl.vim'
 	Plug 'terryma/vim-multiple-cursors'
 	Plug 'AndrewRadev/sideways.vim'
 	Plug 'AndrewRadev/splitjoin.vim'
-	Plug 'ctrlpvim/ctrlp.vim'
-	Plug 'xolox/vim-misc'
-	Plug 'xolox/vim-notes'
-	Plug 'vimwiki/vimwiki'
-	"Plug 'zah/nim.vim'
+	Plug 'junegunn/fzf.vim'
+	Plug 'junegunn/fzf'
+	"Plug 'xolox/vim-misc'
+	"Plug 'xolox/vim-notes'
 	"Plug 'alaviss/nim.nvim'
-	Plug 'baabelfish/nvim-nim'
-	Plug 'mrk21/yaml-vim'
+	"Plug 'prabirshrestha/asyncomplete.vim'
+	"Plug 'mrk21/yaml-vim'
 	Plug 'voldikss/vim-floaterm'
-	Plug 'thaerkh/vim-indentguides'
-	Plug 'jceb/vim-orgmode'
+	"Plug 'thaerkh/vim-indentguides'
+	"Plug 'floobits/floobits-neovim'
+	"Plug 'norcalli/nvim-colorizer.lua'
+	"Plug 'glacambre/firenvim', { 'do': function('firenvim#install(0)') }
+	Plug 'mattn/emmet-vim'
+	"Plug 'vim-scripts/utl.vim'
+	Plug 'tpope/vim-repeat'
 
 	call plug#end()
 " }}}
 " {{{ builtins
 	set number
 	let mapleader = "\<Space>"
+	let maplocalleader = "\<Space>"
 	syntax on
 	filetype plugin indent on
 	set backspace=indent,eol,start
@@ -56,6 +60,10 @@ set nocompatible
 	set foldmethod=marker
 	set splitbelow
 	set splitright
+	set hidden
+	set updatetime=300
+	set shortmess+=c
+	set signcolumn=yes
 " }}}
 " {{{ remaps
 	nnoremap <leader>f za
@@ -71,10 +79,6 @@ set nocompatible
 	vmap <C-S-Left> :tabp<cr>
 	vmap <leader>sl :SidewaysLeft<cr>
 	vmap <leader>sr :SidewaysRight<cr>
-	"imap <C-S-Right> :tabn<cr>
-	"imap <C-S-Left> :tabp<cr>
-	"imap <leader>sl :SidewaysLeft<cr>
-	"imap <leader>sr :SidewaysRight<cr>
 
 	nnoremap <C-J> <C-W><C-J>
 	nnoremap <C-K> <C-W><C-K>
@@ -111,14 +115,43 @@ set nocompatible
 	nmap <leader>wn :tabnew<cr>
 	nmap <leader>wd :tabclose<cr>
 
-	nmap <leader>igt :IndentGuidesToggle<cr>
-
 	noremap <silent> <F12> :FloatermToggle<CR>i
 	noremap! <silent> <F12> <Esc>:FloatermToggle<CR>i
 	tnoremap <silent> <F12> <C-\><C-n>:FloatermToggle<CR>
+
+	nnoremap <silent> <leader><leader> :call fzf#vim#files('.', {'options': '--prompt ""'})<CR>
+" }}}
+" {{{ floating fzf 
+	let g:height = float2nr(&lines * 0.9)
+	let g:width = float2nr(&columns * 0.95)
+	let g:preview_width = float2nr(&columns * 0.7)
+	let g:fzf_buffers_jump = 1
+	let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+	let $FZF_DEFAULT_OPTS=" --color=dark --color=fg:15,bg:-1,hl:1,fg+:#ffffff,bg+:0,hl+:1 --color=info:0,prompt:0,pointer:12,marker:4,spinner:11,header:-1 --layout=reverse  --margin=1,4 --preview 'if file -i {}|grep -q binary; then file -b {}; else bat --style=changes --color always --line-range :40 {}; fi' --preview-window right:" . g:preview_width
+	let g:fzf_layout = { 'window': 'call FloatingFZF(' . g:width . ',' . g:height . ')' }
+
+	function! FloatingFZF(width, height)
+	  let buf = nvim_create_buf(v:false, v:true)
+	  call setbufvar(buf, '&signcolumn', 'no')
+
+	  let height = float2nr(a:height)
+	  let width = float2nr(a:width)
+	  let horizontal = float2nr((&columns - width) / 2)
+	  let vertical = 1
+
+	  let opts = {
+			\ 'relative': 'editor',
+			\ 'row': vertical,
+			\ 'col': horizontal,
+			\ 'width': width,
+			\ 'height': height,
+			\ 'style': 'minimal'
+			\ }
+
+	  call nvim_open_win(buf, v:true, opts)
+	endfunction
 " }}}
 " {{{ functions & commands
-	command Skim :execute "!open -a Skim '" . split(@%,'\.')[0] . ".pdf'"
 	let s:previousMode=''
 	let s:tmuxenv = $TMUX
 	let s:tmux = 0
@@ -141,28 +174,6 @@ set nocompatible
 		endif
 		return ""
 	endfunction
-" }}}
-" {{{ neomake
-	call neomake#configure#automake('nrwi', 1)
-	let g:neomake_warning_sign = {
-	  \ 'text': '--',
-	  \ 'texthl': 'WarningMsg',
-	  \ }
-	let g:neomake_error_sign = {
-	  \ 'text': '>>',
-	  \ 'texthl': 'ErrorMsg',
-	  \ }
-" }}}
-" {{{ deoplete
-	let g:deoplete#enable_at_startup = 1
-	" call deoplete#custom#var('clangx', 'default_c_options', '')
-	" call deoplete#custom#var('clangx', 'default_cpp_options', '')
-	let g:deoplete#sources#rust#racer_binary='/Users/blake/.cargo/bin/racer'
-	let g:deoplete#sources#rust#rust_source_path='/Users/blake/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src'
-	let g:deoplete#sources#ternjs#types = 1
-" }}}
-" {{{ neotex
-	let g:neotex_delay = 1
 " }}}
 " {{{ quantum
 	let g:quantum_black = 1
@@ -187,10 +198,6 @@ set nocompatible
     let g:airline_symbols.readonly = ''
     let g:airline_symbols.linenr = ''
 " }}}
-" {{{ vim-notes
-	let g:notes_directories = ['~/class/Notes']
-	let g:notes_suffix = '.txt'
-" }}}
 " {{{ tmuxline
 	let g:tmuxline_powerline_separators = 1
 	let g:tmuxline_theme = 'airline'
@@ -200,28 +207,19 @@ set nocompatible
 		\'c': '',
 		\'win': '#I #W',
 		\'cwin': '#I #W',
-		\'x': '#(sh ~/dotfiles/scripts/cpu_percentage.sh)',
+		\'x': '#(sh ~/dotfiles/scripts/cpu_percentage.sh) | #(~/dotfiles/scripts/osx-cpu-temp)',
 		\'y': '#(sh ~/dotfiles/scripts/batt.sh)',
 		\'z': '#(date +"%l:%M%p")'}
 " }}}
 " {{{ floaterm 
 	let g:floaterm_position = 'center'
 " }}}
-" {{{ vim-indentguides 
-
+" {{{ emmet-vim 
+	let g:user_emmet_leader_key=','
 " }}}
 " {{{ autocmd
-	autocmd BufRead,BufNewFile *.txt highlight notesTextURL ctermfg=39 guifg=#00afff gui=underline cterm=underline
-	autocmd BufRead,BufNewFile *.txt highlight notesRealURL ctermfg=39 guifg=#00afff gui=underline cterm=underline
-	autocmd BufRead,BufNewFile *.txt highlight notesEmailAddr ctermfg=39 guifg=#00afff gui=underline cterm=underline
-	autocmd BufRead,BufNewFile *.txt highlight notesAtxHeading ctermfg=28 guifg=#008700 gui=bold cterm=bold
-
 	autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-
-	au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
-	autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " }}}
 " {{{ highlights
 	hi Visual ctermfg=255 guifg=#FFFFFF ctermbg=129 guibg=#AF00FF
-	highlight Comment cterm=italic
 " }}}

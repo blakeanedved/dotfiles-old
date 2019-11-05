@@ -1,5 +1,3 @@
-#!/bin/bash
-
 if [[ "$1" == "CSC-461" ]];
 then
 	ln -sfn ~/Documents/School/CSC-461 ~/class

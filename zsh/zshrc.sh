@@ -1,44 +1,20 @@
 export ZSH=~/dotfiles/zsh
-TERM=xterm-256color-italic
+TERM=xterm-256color
 export EDITOR=nvim
-export PATH=/Users/blake/.nimble/bin:$PATH
+export PATH=/Users/$USER/.nimble/bin:/Users/$USER/.local/bin:$PATH
 
 source $ZSH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 autoload -Uz add-zsh-hook
 _nicy_prompt() {
-	#PROMPT=$(~/.nimble/bin/nicy)
-	PROMPT=$(~/.nimble/pkgs/nicy-2.4.2/nicy2)
+	PROMPT=$(~/dotfiles/scripts/prompt/left)
+	RPROMPT=$(~/dotfiles/scripts/prompt/right)
+}
+preexec () {
+	~/dotfiles/scripts/prompt/preexec $@
 }
 add-zsh-hook precmd _nicy_prompt
-
-#source $ZSH/oh-my-zsh.sh
-
-#local _return_status="%(?.., %{$fg_bold[red]%}⍉)%{$reset_color%}"
-#local _current_dir="%{$fg_bold[blue]%}%3~%{$reset_color%}"
-
-#function preexec() {
-  #timer=${timer:-$SECONDS}
-#}
-#PROMPT="[${_current_dir}%{$fg[$CARETCOLOR]%}%{$resetcolor%}] "
-#function precmd() {
-	#if [ $timer ]; then
-		#timer_show=$(($SECONDS - $timer))
-		#if [ $timer_show -gt 0 ]; then
-			#PROMPT="[${_current_dir}%{$fg[$CARETCOLOR]%}%{$resetcolor%}${_return_status}, %F{magenta}${timer_show}s%{$reset_color%}] "
-		#else
-			#PROMPT="[${_current_dir}%{$fg[$CARETCOLOR]%}%{$resetcolor%}${_return_status}] "
-		#fi
-		#unset timer
-	#fi
-#}
-
-#PROMPT='[$(_user_host)${_current_dir}%{$fg[$CARETCOLOR]%}%{$resetcolor%}] '
-
-rmd () {
-	pandoc $1 | lynx -stdin
-}
 
 calc () {
 	~/dotfiles/scripts/calc/calc $@
@@ -48,7 +24,7 @@ gitclone () {
 	repo=${1#*/}
 	if [ $repo = $1 ]
 	then
-		git clone https://github.com/blakeanedved/$repo ~/Documents/Projects/$repo
+		git clone https://github.com/$GITHUB_USERNAME/$repo ~/Documents/Projects/$repo
 	else
 		git clone https://github.com/$1 ~/Documents/Projects/$repo
 	fi
@@ -60,7 +36,7 @@ github () {
 	repo=${1#*/}
 	if [ $repo = $1 ]
 	then
-		open https://github.com/blakeanedved/$1
+		open https://github.com/$GITHUB_USERNAME/$1
 	else
 		open https://github.com/$1
 	fi
@@ -110,39 +86,14 @@ rand () {
 	python3 ~/dotfiles/scripts/rand.py $@
 }
 
-alias projector='python3 ~/dotfiles/scripts/projector/projector.py'
-alias proj='python3 ~/dotfiles/scripts/projector/projector.py'
-alias p='python3 ~/dotfiles/scripts/projector/projector.py'
-
-alias tmux="env TERM=screen-256color-italic tmux"
-
 alias ga="git add ."
 alias gc="git commit"
 alias gp="git push -u origin master"
 
-alias vim="nvim"
-
-alias skim="open -a Skim"
-
-alias vimrc="vim ~/dotfiles/nvim/init.vim"
-alias tmuxrc="vim ~/dotfiles/tmux/tmux.conf"
-alias zshrc="vim ~/dotfiles/zsh/zshrc.sh"
-
-alias ls="exa"
-
-alias server="browser-sync start --server --files '**/*.html' '**/*.css' '**/*.js'"
+alias vimrc="nvim ~/dotfiles/nvim/init.vim"
+alias tmuxrc="nvim ~/dotfiles/tmux/tmux.conf"
+alias zshrc="nvim ~/dotfiles/zsh/zshrc.sh"
 
 alias now="date +'%l:%M%p'"
 
-alias setclass="sh ~/dotfiles/scripts/makelink"
-
-hash -d nvim=$HOME/dotfiles/nvim
-hash -d zsh=$HOME/dotfiles/zsh
-hash -d tmux=$HOME/dotfiles/tmux
-hash -d kattis=$HOME/Documents/School/Programming\ Club/Kattis
-hash -d p=$HOME/Documents/Projects/
-hash -d s=$HOME/Documents/School/
-hash -d proglangs=$HOME/Documents/School/CSC-461/
-hash -d parallel=$HOME/Documents/School/CSC-410/
-hash -d ood=$HOME/Documents/School/CSC-260/
-hash -d softsec=$HOME/Documents/School/CSC-234/
+neofetch
