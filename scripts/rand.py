@@ -2,18 +2,11 @@
 import requests
 import argparse
 import os
-import socket
 import random
 import datetime
 from pprint import pprint
 
-online = None
-try:
-    socket.create_connection(('https://api.random.org', 80))
-    online = True
-except:
-    print("No internet connection detected, using local pseudo random number generation")
-    online = False
+online = True
 
 methods = {
     'i': 'generateIntegers',
