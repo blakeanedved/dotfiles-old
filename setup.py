@@ -79,6 +79,7 @@ if inp != 'n':
     inp = input('Install custom nicy prompt? (requires nim) [Y/n]')
     if inp != 'n':
         p.install_system_package('nim')
+        subprocess.call(['nimble', 'install', 'nicy'], stdout=subprocess.PIPE)
         subprocess.call(['nim', 'c', os.path.expanduser('~/dotfiles/scipts/prompt/left')])
         subprocess.call(['nim', 'c', os.path.expanduser('~/dotfiles/scipts/prompt/right')])
         subprocess.call(['nim', 'c', os.path.expanduser('~/dotfiles/scipts/prompt/precmd')])
