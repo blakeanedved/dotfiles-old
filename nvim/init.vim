@@ -3,6 +3,18 @@ set nocompatible
 " 	curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 " or with this for vim8
 " 	curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+" "languageserver": {
+"    "ccls": {
+"      "command": "ccls",
+"      "filetypes": ["c", "cpp", "objc", "objcpp"],
+"      "rootPatterns": [".ccls", "compile_commands.json", ".vim/", ".git/", ".hg/"],
+"      "initializationOptions": {
+"         "cache": {
+"           "directory": "/tmp/ccls"
+"         }
+"       }
+"    }
+"  }
 " {{{ Plugins
 	call plug#begin('~/dotfiles/nvim/plugins')
 
