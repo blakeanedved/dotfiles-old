@@ -1,4 +1,8 @@
 set nocompatible
+" Install vim-plug with
+" 	curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+" or with this for vim8
+" 	curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 " {{{ Plugins
 	call plug#begin('~/dotfiles/nvim/plugins')
 
