@@ -1,99 +1,58 @@
-export ZSH=~/dotfiles/zsh
-TERM=xterm-256color
-export EDITOR=nvim
-export PATH=/Users/$USER/.nimble/bin:/Users/$USER/.local/bin:$PATH
+# {{{ Environment Variables 
+	export ZSH_PLUGIN_PATH=~/dotfiles/zsh/plugins
+	export EDITOR=vim
 
-source $ZSH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+	export BAT_THEME="TwoDark"
+	export FZF_DEFAULT_OPTS="-i --prompt='> ' --color=dark --color=fg:-1,bg:-1,hl:#1266ca,fg+:#ffffff,bg+:-1,hl+:#1266ca,info:-1,prompt:#fef937 --preview 'bat --style=changes --color always --line-range :40 {}' --preview-window right:60%"
 
-autoload -Uz add-zsh-hook
-_nicy_prompt() {
-	PROMPT=$(~/dotfiles/scripts/prompt/left)
-	RPROMPT=$(~/dotfiles/scripts/prompt/right)
-}
-preexec () {
-	~/dotfiles/scripts/prompt/preexec $@
-}
-add-zsh-hook precmd _nicy_prompt
+	export PATH=$PATH:~/dotfiles/bin
+# }}}
+# {{{ Plugins 
+	source $ZSH_PLUGIN_PATH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+	source $ZSH_PLUGIN_PATH/zsh-autosuggestions/zsh-autosuggestions.zsh
+	source $ZSH_PLUGIN_PATH/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-calc () {
-	~/dotfiles/scripts/calc/calc $@
-}
-
-gitclone () {
-	repo=${1#*/}
-	if [ $repo = $1 ]
-	then
-		git clone https://github.com/$GITHUB_USERNAME/$repo ~/Documents/Projects/$repo
-	else
-		git clone https://github.com/$1 ~/Documents/Projects/$repo
-	fi
-	chmod -R 774 ~/Documents/Projects/$repo
-	cd ~/Documents/Projects/$repo
-}
-
-github () {
-	repo=${1#*/}
-	if [ $repo = $1 ]
-	then
-		open https://github.com/$GITHUB_USERNAME/$1
-	else
+	autoload -U promptinit; promptinit
+	prompt pure
+# }}}
+# {{{ Functions 
+	github () {
 		open https://github.com/$1
-	fi
-}
+	}
 
-search () {
-	searchstr="https://duckduckgo.com/?q="
-	first=1
-	for var in "$@"
-	do
-		if [[ $first == 1 && ($var == "w" || $var == "imdb" || $var == "a" || $var == "e" || $var == "so" || $var == "gh" || $var == "zillow" || $var == "tw" || $var == "li" || $var == "r" || $var == "ste" || $var == "nf" || $var == "p" || $var == "wa" || $var == "yt" || $var == "g" || $var == "cpp" || $var == "rust" || $var == "py" || $var == "py3") ]]
-		then
-			var="!$var"
-		fi
-		first=0
-		searchstr="$searchstr$var+"
-	done
+	search () {
+		searchstr="https://duckduckgo.com/?q="
+		for var in "$@"
+		do
+			searchstr="$searchstr$var+"
+		done
 
-	searchstr=${searchstr%?}
+		searchstr=${searchstr%?}
 
-	open "$searchstr"
-}
+		open "$searchstr"
+	}
 
-docs () {
-	searchstr="https://duckduckgo.com/?q="
-	first=1
-	for var in "$@"
-	do
-		if [[ $first == 1 && ($var == "cpp" || $var == "py" || $var == "python" || $var == "py3" || $var == "python3" || $var == "rust" || $var == "js") ]]
-		then
-			if [[ $var == "c++" ]]
-			then
-				var="cpp"
-			fi
-			var="!$var"
-		fi
-		first=0
-		searchstr="$searchstr$var+"
-	done
+	swap () {
+		mv $1 $1$2
+		mv $2 $1
+		mv $1$2 $2
+	}
 
-	searchstr=${searchstr%?}
+	serve () {
+		browser-sync start --server --files '**/*.html' '**/*.css' '**/*.js'
+	}
 
-	open "$searchstr"
-}
-
-rand () {
-	python3 ~/dotfiles/scripts/rand.py $@
-}
-
-alias ga="git add ."
-alias gc="git commit"
-alias gp="git push -u origin master"
-
-alias vimrc="nvim ~/dotfiles/nvim/init.vim"
-alias tmuxrc="nvim ~/dotfiles/tmux/tmux.conf"
-alias zshrc="nvim ~/dotfiles/zsh/zshrc.sh"
-
-alias now="date +'%l:%M%p'"
-
-neofetch
+	now () {
+		date +'%l:%M%p'
+	}
+# }}}
+# {{{ Aliases 
+	alias vimrc="$EDITOR ~/dotfiles/vim/init.vim"
+	alias zshrc="$EDITOR ~/dotfiles/zsh/zshrc.sh"
+	alias tmuxrc="$EDITOR ~/dotfiles/tmux/tmux.conf"
+# }}}
+# {{{ Hashes 
+	hash -d vim=$HOME/dotfiles/vim
+	hash -d zsh=$HOME/dotfiles/zsh
+	hash -d tmux=$HOME/dotfiles/tmux
+# }}}

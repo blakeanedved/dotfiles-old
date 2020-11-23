@@ -1,2 +1,3 @@
-nvim/plugins/**
-*.mine
+vim/plugins/**
+tmux/plugins/**
+node_modules
